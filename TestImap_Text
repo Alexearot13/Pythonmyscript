@@ -1,0 +1,248 @@
+from ast import If, IsNot
+from cgi import print_directory
+from cgitb import text
+from configparser import Interpolation
+from distutils.command.install_scripts import install_scripts
+import email
+import getpass, imaplib
+from http.client import UnimplementedFileMode
+from importlib import import_module
+from mailbox import Mailbox
+from multiprocessing.connection import Client
+from operator import indexOf, truediv
+import os
+from pickletools import read_int4
+from pprint import pprint
+from sqlite3 import DateFromTicks
+import sys
+import base64, re
+from time import gmtime
+from traceback import print_list, print_tb
+import unicodecsv as csv
+from datetime import date, datetime, timedelta
+import email.header
+import datetime
+
+mmm_to_MM =	{
+				"01" : "Jan",
+				"02" : "Feb",
+				"03" : "Mar",
+				"04" : "Apr",
+				"05" : "May",
+				"06" : "Jun",
+				"07" : "Jul",
+				"08" : "Aug",
+				"09" : "Sep",
+				"10" : "Oct",
+				"11" : "Nov",
+				"12" : "Dec",
+			}
+
+
+cliente_num__to__str = [
+				"CLIENT",
+				
+]
+
+AMSA_TEXT = [
+    "-------------name--------------",
+]
+
+Client_TEXT = []
+
+TEST_VARIABLE = [
+    Client_TEXT,
+]
+
+MAIL_CONTENT_ROWS = []
+GTM = 3
+
+def funcionx():
+    with open('txt.csv') as extension_txt:
+        return extension_txt.readlines()
+
+def a_day_ago():
+    day = datetime.datetime.now()
+    day_ = day - timedelta(days=1)
+    day_ago = datetime.date.strftime(day_,'%d-%m-%Y')
+    return day_ago
+
+def get_reception_date(date):
+    date_formatt = str(email.utils.parsedate_tz(date))
+    date_formatt = date_formatt.split(',')
+
+    date_day = date_formatt[2].replace(' ','')
+    date_month = date_formatt[1].replace(' ','')
+    date_year = date_formatt[0].replace('(','')
+    date_hour = date_formatt[3].replace(' ','')
+    date_min = date_formatt[4].replace(' ','')
+    date_sec = date_formatt[5].replace(' ','')
+
+    date_day = date_day if len(date_day) == 2 else '0{}'.format(date_day)
+    date_month = date_month if len(date_month) == 2 else '0{}'.format(date_month)
+    date_hour = date_hour if len(date_hour) == 2 else '0{}'.format(date_hour)
+    date_min = date_min if len(date_min) == 2 else '0{}'.format(date_min)
+    date_sec = date_sec if len(date_sec) == 2 else '0{}'.format(date_sec)
+
+    only_date = '{}/{}/{}'.format(date_month, date_day, date_year)
+    only_hour = '{}:{}:{}'.format(date_hour, date_min, date_sec)
+
+    date_time_var = '{} {}'.format(only_date, only_hour)
+    date_time_var = datetime.datetime.strptime(date_time_var, '%m/%d/%Y %H:%M:%S')
+    date_time_var = date_time_var - datetime.timedelta(hours=GTM)
+    date_time_var = datetime.datetime.strftime(date_time_var, '%m/%d/%Y %H:%M:%S')
+
+    return date_time_var
+
+def decode_mime_words(s):
+    return u''.join(
+        word.decode(encoding or 'utf8') if isinstance(word, bytes) else word
+        for word, encoding in email.header.decode_header(s))
+
+print("""
+
+	1. - CLIENT 
+	2. - CLIENT   
+	3. - CLIENT     
+	4. - CLIENT    
+	5. - CLIENT   
+	6. - CLIENT        
+
+      """)
+
+fecha        = a_day_ago()
+fecha_final  = datetime.date.strftime(datetime.datetime.today(),'%d-%m-%Y')
+print('Inicio: ', datetime.datetime.now()-timedelta(days=1))
+print('Fin: ', datetime.datetime.today())
+num_client_iterator = 0
+bitacora = open("Out filename" + ".csv", 'wb')
+bitacoraCSV = csv.writer(bitacora, delimiter=',', quotechar='"',  quoting=csv.QUOTE_ALL)
+bitacoraCSV.writerow([
+                    "Cliente",
+                    "Plataforma",
+                    "ID de Correlacion",
+                    "Hora de Deteccion",
+                    "Hora de Recepcion",
+                    "Comentario",
+                    ])
+
+for ii in range(len(cliente_num__to__str)):
+
+    ClientName = cliente_num__to__str[num_client_iterator]
+    SUBJECT = "[GE][" + ClientName + "]"
+    imapSession = imaplib.IMAP4_SSL('imap.gmail.com', 993)
+    typ, accountDetails = imapSession.login("mail", "aplication_password")
+    DATE = fecha[0:3] + mmm_to_MM[fecha[3:5]] + fecha[5:10]
+    BEFORE = fecha_final[0:3] + mmm_to_MM[fecha_final[3:5]] + fecha_final[5:10]
+
+    imapSession.select(ClientName)
+
+    print('------------ Looking for ------------')
+    print('CLIENT:',	ClientName)
+    print('SUBJECT:',	SUBJECT)
+    print('SINCE:',		DATE)
+    print('BEFORE:',	BEFORE)
+    print('-------------------------------------')
+
+    contador = 0
+    
+    for i in range(len(TEST_VARIABLE[num_client_iterator])):
+        typ, data = imapSession.search(None, '(FROM "plataformas@cci-entel.cl")', '(TEXT "' + TEST_VARIABLE[num_client_iterator][i] + '")', '(SUBJECT "' + SUBJECT + '")', '(SINCE "' + DATE + '")', '(BEFORE "' + BEFORE + '")')
+        contador += 1
+        print("")
+        if "AD" in TEST_VARIABLE[num_client_iterator][i]:
+            print("************* PLATAFORMA:  (  AD  ) [[",TEST_VARIABLE[num_client_iterator][i],"]] *************")
+            plataforma = "AD"
+        if "FW" in TEST_VARIABLE[num_client_iterator][i]:
+            print("************* PLATAFORMA:  (  FW  ) [[",TEST_VARIABLE[num_client_iterator][i],"]] *************")
+            plataforma = "FW"
+        else:
+            print("(************* PLATAFORMA:  (  OTROS  ) [[",TEST_VARIABLE[num_client_iterator][i],"]] *************")
+            plataforma = "OTROS"
+        
+        print("")
+        print("")
+        
+        #Entra por cantidad de alertas encontradas
+        for mail_id in data[0].split():
+            typ, messageParts = imapSession.fetch(mail_id, '(RFC822)')
+            emailBody = messageParts[0][1]
+            mail = email.message_from_bytes(emailBody)
+            
+        
+
+            for part in mail.walk():
+                
+                
+                mainType = part.get_content_maintype()
+                subType = part.get_content_subtype()
+                fullType = mainType + '-' + subType
+                tipo = mainType
+
+                a =  str((part.get_payload(decode=True)))
+
+                client_column = ClientName
+                platform_column = ""
+                id_alert_column = ""
+                hour_deteccion_column = ""
+                hour_reception_column = ""
+                comments_column = ""
+                
+                list_find_last_id = data[0].decode().split()
+
+                condition_mail_id = ""
+                
+                #if condition_mail_id == list_find_last_id.pop():
+                id_alert_column  = re.search(r"ID Alerta SIEM[\s\\t]*:[\s\\t]*?(.*?)(\\r|\s)|\[CL-ALERT\]-(.*)-\[SIEM\]", a)
+                if id_alert_column != None:
+                    id_alerta = id_alert_column.group(1)
+                if id_alerta is None:
+                    id_alerta = id_alert_column.group(3)
+                Nid_siem = id_alerta.find("47-")
+                if Nid_siem != -1:
+                        finid_siem = 10 + Nid_siem
+                        id_siem = id_alerta[Nid_siem:finid_siem]
+                hora_deteccion_re = re.search(r"(Hora Detecci\\xc3\\xb3n|Hora Inicio detecci\\xc3\\xb3n)[\s\\t]*:[\s\\t]*(.*?)\\r", a)
+                if hora_deteccion_re:
+                    hora_deteccion = hora_deteccion_re.group(2)
+                hora_recepcion = get_reception_date(part.get('Date'))
+
+                hour_one = hora_deteccion[11:13]
+                hour_two = hora_recepcion[11:13]
+                last_hour = int(hour_two) - int(hour_one)
+
+                if hour_two < hour_one:
+                    comentario = "Revision manual"
+                else:
+                    if last_hour >= 2:
+                        comentario = "Revisar"
+                    if last_hour > 2:
+                        comentario = "Desfasado sobre 1 hora"
+                    else:
+                        comentario = "Sin comentarios"
+
+                #if last_i == i:
+                #    ultimo_evento = "Este es el ultimo evento"
+                
+                #Prints
+                print("CLIENTE: ",client_column)  
+                print("ID DE CORRELACION: ", id_siem)
+                print("HORA DE DETECCION: ", hora_deteccion)
+                print("FECHA DE RECEPCION: ", hora_recepcion)
+                print("PLATAFORMA: ",plataforma)
+                print("")
+
+                #if last_hora_deteccion > hora_deteccion:
+                #    print("es mayor")
+                
+                bitacoraCSV.writerow([
+                    ClientName,
+                    plataforma,
+                    id_siem,
+                    hora_deteccion,
+                    hora_recepcion,
+                    comentario,
+                ])
+
+    num_client_iterator += 1
+
